@@ -1,0 +1,8 @@
+PyQt6>=6.6.0
+yt-dlp>=2023.11.16
+mutagen>=1.47.0
+pyqtdarktheme>=0.1.7
+audioop-lts
+numpy
+pydub
+pyinstaller
