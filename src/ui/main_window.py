@@ -523,6 +523,25 @@ class MainWindow(QMainWindow):
         
         self.scroll_area.setWidget(self.queue_widget)
         dash_layout.addWidget(self.scroll_area, stretch=1)
+        
+        # 3.5 Ad Banner (QtWebEngine)
+        try:
+            from PyQt6.QtWebEngineWidgets import QWebEngineView
+            from PyQt6.QtCore import QUrl
+            import os
+            
+            self.ad_view = QWebEngineView()
+            self.ad_view.setFixedHeight(120)
+            self.ad_view.setStyleSheet("background: transparent; border: none;")
+            
+            # Load local HTML file
+            ad_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "ad_banner.html"))
+            if os.path.exists(ad_path):
+                self.ad_view.load(QUrl.fromLocalFile(ad_path))
+                
+            dash_layout.addWidget(self.ad_view)
+        except ImportError:
+            print("PyQt6-WebEngine kurulu değil, reklam alanı gösterilmiyor.")
 
         # Add Dashboard to Stacked Widget
         self.stacked_widget.addWidget(self.dashboard_widget)

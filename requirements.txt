@@ -6,3 +6,4 @@ audioop-lts
 numpy
 pydub
 pyinstaller
+PyQt6-WebEngine
