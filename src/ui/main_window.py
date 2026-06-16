@@ -224,6 +224,58 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error setting up global media keys: {e}")
 
+    def setup_tray_icon(self):
+        from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
+        from PyQt6.QtGui import QIcon
+        from PyQt6.QtWidgets import QApplication
+        import sys
+        import os
+        
+        self.tray_icon = QSystemTrayIcon(self)
+        
+        # Try to use an icon, fallback to default window icon
+        # We can just draw a temporary pixmap if no icon exists
+        from PyQt6.QtGui import QPixmap, QPainter
+        pixmap = QPixmap(64, 64)
+        pixmap.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(pixmap)
+        painter.setBrush(QColor("#a371f7"))
+        painter.drawEllipse(10, 10, 44, 44)
+        painter.end()
+        
+        self.tray_icon.setIcon(QIcon(pixmap))
+        
+        tray_menu = QMenu()
+        show_action = tray_menu.addAction("Aç/Göster")
+        show_action.triggered.connect(self.show)
+        
+        quit_action = tray_menu.addAction("Çıkış Yap")
+        quit_action.triggered.connect(QApplication.instance().quit)
+        
+        self.tray_icon.setContextMenu(tray_menu)
+        self.tray_icon.show()
+        
+        self.tray_icon.activated.connect(self.on_tray_icon_activated)
+
+    def on_tray_icon_activated(self, reason):
+        from PyQt6.QtWidgets import QSystemTrayIcon
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show()
+
+    def closeEvent(self, event):
+        # Minimize to tray instead of quitting
+        event.ignore()
+        self.hide()
+        self.tray_icon.showMessage(
+            "AuraBeat Arka Planda",
+            "Uygulama arka planda (tepside) çalışmaya devam ediyor.",
+            QSystemTrayIcon.MessageIcon.Information,
+            2000
+        )
+
     def apply_premium_stylesheet(self):
         # Global Stylesheet for Premium Look
         self.setStyleSheet("""
@@ -391,9 +443,33 @@ class MainWindow(QMainWindow):
 
         self.stacked_widget = QStackedWidget()
 
-        # --- PAGE 0: MAIN DASHBOARD ---
-        self.dashboard_widget = QWidget()
-        dash_layout = QVBoxLayout(self.dashboard_widget)
+        # --- PAGE 0: MAIN DASHBOARD (TABS) ---
+        from PyQt6.QtWidgets import QTabWidget
+        self.dashboard_widget = QTabWidget()
+        self.dashboard_widget.setStyleSheet("""
+            QTabWidget::pane { border: none; }
+            QTabBar::tab {
+                background: #161b22;
+                color: #8b949e;
+                padding: 10px 20px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+                margin-right: 5px;
+            }
+            QTabBar::tab:selected {
+                background: #238636;
+                color: #ffffff;
+            }
+            QTabBar::tab:hover:!selected {
+                background: #21262d;
+                color: #c9d1d9;
+            }
+        """)
+        
+        self.downloads_tab = QWidget()
+        dash_layout = QVBoxLayout(self.downloads_tab)
         dash_layout.setContentsMargins(30, 30, 30, 15)
         dash_layout.setSpacing(20)
 
@@ -543,6 +619,17 @@ class MainWindow(QMainWindow):
         except ImportError:
             print("PyQt6-WebEngine kurulu değil, reklam alanı gösterilmiyor.")
 
+        # Build Tabs
+        self.dashboard_widget.addTab(self.downloads_tab, "İndirmeler")
+        
+        try:
+            from src.ui.yt_music_tab import YTMusicTab
+            self.yt_music_tab = YTMusicTab()
+            self.yt_music_tab.stream_requested.connect(self.play_ytm_stream)
+            self.dashboard_widget.addTab(self.yt_music_tab, "Keşfet (YouTube Music)")
+        except Exception as e:
+            print("YTMusicTab load error:", e)
+
         # Add Dashboard to Stacked Widget
         self.stacked_widget.addWidget(self.dashboard_widget)
 
@@ -573,6 +660,9 @@ class MainWindow(QMainWindow):
         sig_label = QLabel(f"Crafted with 🩵 by {username}")
         sig_label.setStyleSheet("color: #484f58; font-size: 11px; font-weight: bold;")
         self.status_bar.addPermanentWidget(sig_label)
+        
+        # 6. System Tray
+        self.setup_tray_icon()
 
     def toggle_expanded_view(self, is_expanded):
         from PyQt6.QtWidgets import QGraphicsOpacityEffect
@@ -756,3 +846,82 @@ class MainWindow(QMainWindow):
             self.dir_label.setText(f"Kayıt Klasörü:  {config.get('download_path')}")
             if hasattr(self, 'expanded_player_widget'):
                 self.expanded_player_widget.load_playlist(config.get('download_path'))
+
+    def play_ytm_stream(self, url, title, cover_url):
+        self.status_bar.showMessage("Akış başlatılıyor: " + title)
+        from PyQt6.QtCore import QThread, pyqtSignal
+        import subprocess
+
+        class StreamResolver(QThread):
+            resolved = pyqtSignal(str)
+            error = pyqtSignal(str)
+            
+            def __init__(self, target_url):
+                super().__init__()
+                self.target_url = target_url
+                
+            def run(self):
+                try:
+                    import yt_dlp
+                    ydl_opts = {
+                        'format': 'bestaudio/best',
+                        'quiet': True,
+                        'no_warnings': True,
+                    }
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        info = ydl.extract_info(self.target_url, download=False)
+                        stream_url = info['url']
+                        self.resolved.emit(stream_url)
+                except Exception as e:
+                    self.error.emit(str(e))
+
+        self.stream_resolver = StreamResolver(url)
+        def on_resolved(stream_url):
+            self.status_bar.showMessage("Oynatılıyor: " + title, 5000)
+            self.mini_player.load_media(stream_url, title)
+            # Fetch cover image
+            if cover_url:
+                self.fetch_ytm_cover(cover_url)
+
+        def on_error(e):
+            self.status_bar.showMessage("Akış hatası: " + str(e), 5000)
+
+        self.stream_resolver.resolved.connect(on_resolved)
+        self.stream_resolver.error.connect(on_error)
+        self.stream_resolver.start()
+
+    def fetch_ytm_cover(self, url):
+        from PyQt6.QtCore import QThread, pyqtSignal
+        from PyQt6.QtGui import QImage, QPixmap
+        import requests
+
+        class CoverFetcher(QThread):
+            loaded = pyqtSignal(QPixmap)
+            def __init__(self, cover_url):
+                super().__init__()
+                self.cover_url = cover_url
+            def run(self):
+                try:
+                    resp = requests.get(self.cover_url, timeout=5)
+                    if resp.status_code == 200:
+                        img = QImage()
+                        img.loadFromData(resp.content)
+                        if not img.isNull():
+                            pixmap = QPixmap.fromImage(img)
+                            self.loaded.emit(pixmap)
+                except:
+                    pass
+
+        self.cover_fetcher = CoverFetcher(url)
+        def on_cover_loaded(pixmap):
+            self.mini_player.high_res_cover = pixmap
+            # If expanded player is visible, update it
+            if hasattr(self, 'expanded_player_widget') and self.stacked_widget.currentIndex() == 1:
+                self.expanded_player_widget.circular_visualizer.set_album_art(pixmap)
+                
+                small_pix = pixmap.scaled(20, 20, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                blurred_pix = small_pix.scaled(800, 800, Qt.AspectRatioMode.KeepAspectRatioByExpanding, Qt.TransformationMode.SmoothTransformation)
+                self.expanded_player_widget.bg_label.setPixmap(blurred_pix)
+
+        self.cover_fetcher.loaded.connect(on_cover_loaded)
+        self.cover_fetcher.start()

@@ -1,103 +1,95 @@
-# AuraBeat
-AuraBeat is a premium, fully cross-platform media downloader and player with a built-in 3D Parallax Visualizer and Particle Engine.
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=AuraBeat%20🎵&fontSize=60&animation=fadeIn&fontAlignY=38&desc=Evrensel%20Medya%20Yöneticisi%20ve%20Oynatıcı&descAlignY=55&descAlign=62" />
+</div>
+
+<div align="center">
+  
+  [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)]()
+  [![PyQt6](https://img.shields.io/badge/PyQt6-UI%20Framework-41CD52?style=for-the-badge&logo=qt&logoColor=white)]()
+  [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6?style=for-the-badge&logo=windows&logoColor=white)]()
+  [![License](https://img.shields.io/badge/License-MIT-F4D03F?style=for-the-badge)]()
+  
+</div>
 
 <br>
 
-## 🇹🇷 Türkçe (Turkish)
+<h2 align="center">🇹🇷 Türkçe (Turkish)</h2>
+
 AuraBeat; YouTube, Spotify, SoundCloud gibi platformlardan dilediğiniz içerikleri hem ses (MP3) hem de video (MP4) olarak en yüksek kalitede indirebilmenizi sağlayan, premium tasarımlı ve gelişmiş görselleştiriciye sahip modern bir medya yöneticisidir. Tamamen **Windows ve Linux** uyumlu olarak tasarlanmıştır.
 
-### ✨ Özellikler
-- **Hızlı İndirme:** İçerikleri kayıpsız formatlarda bilgisayarınıza indirir.
-- **Akıllı Pano İzleyici:** Panoya (Clipboard) kopyaladığınız YouTube/Spotify linklerini algılayıp doğrudan indirme kutusuna yapıştırır.
-- **Dahili Müzik Çalar & Görselleştirici:** 
-  - **Glassmorphism:** Şık ve premium cam arka plan tasarımı.
-  - **Sese Duyarlı Parçacık Efekti:** Müziğin temposuna (Özellikle bas vuruşlarına) duyarlı yıldız tozu animasyonları.
-  - **3D Parallax Derinlik Efekti:** Farenizi hareket ettirdiğinizde oynatıcı menüsü ve arka plan arasında üç boyutlu bir derinlik hissi oluşur.
-- **Evrensel Uyumluluk:** Her iki işletim sisteminde (Windows ve Linux) hiçbir kod değişikliği gerektirmeden çalışır.
+### ✨ Yeni Nesil Özellikler
+| Kategori | Özellik | Açıklama |
+|----------|---------|----------|
+| 🎧 **YouTube Music** | Doğrudan Dinleme | Uygulama içinden ayrılmadan YouTube Music'te arama yapın ve şarkıları anında (indirmeden) dinleyin! |
+| 🎨 **Arayüz** | Glassmorphism | Şık ve premium buzlu cam arka plan tasarımı. |
+| 🎇 **Görselleştirici** | Parçacık Efekti (Particle) | Müziğin temposuna ve bas vuruşlarına duyarlı yıldız tozu animasyonları. |
+| 🌌 **Derinlik** | 3D Parallax | Farenizi hareket ettirdiğinizde oynatıcı menüsü ve arka plan arasında üç boyutlu bir derinlik hissi oluşur. |
+| 🌙 **Uyku & Arka Plan** | System Tray | Uygulamayı kapattığınızda gizlice arka planda (tepside) çalmaya devam eder ve uyku zamanlayıcısı ile belirlediğiniz süre sonunda otomatik kapanır. |
+| 📋 **Akıllı Pano** | Pano İzleyici | Panoya kopyaladığınız YouTube/Spotify linklerini algılayıp doğrudan indirme kutusuna yapıştırır. |
 
 ### 🚀 Nasıl Kurulur ve Çalıştırılır?
 
 AuraBeat hem **Windows 10 / Windows 11** hem de modern **Linux** dağıtımlarında (Ubuntu, Arch, Fedora vb.) sorunsuz çalışır.
 
-**Gereksinimler:** 
-- Python 3.10 veya daha yeni bir sürüm.
-- Sisteminizde [FFmpeg](https://ffmpeg.org/) aracının kurulu olması gerekmektedir (İndirilen dosyaları işlemek ve oynatmak için hayati önem taşır).
+**Gereksinimler:** Python 3.10+ ve sisteminizde [FFmpeg](https://ffmpeg.org/) kurulu olması gerekmektedir.
 
-#### Seçenek 1: Doğrudan Kaynak Koddan Çalıştırmak (Windows ve Linux)
-Bu yöntem ile uygulamayı en hafif haliyle, doğrudan Python üzerinden çalıştırabilirsiniz.
-1. Proje klasörünü bilgisayarınıza indirin (ZIP olarak indirin veya git ile klonlayın).
+#### Seçenek 1: Doğrudan Çalıştırmak (Windows ve Linux)
+1. Proje klasörünü bilgisayarınıza indirin.
 2. Klasörün içerisinde bir Komut Satırı (CMD) veya Terminal açın.
-3. Gerekli kütüphaneleri yükleyin:
+3. Gerekli kütüphaneleri yükleyin ve başlatın:
    ```bash
    pip install -r requirements.txt
-   ```
-4. Uygulamayı başlatın:
-   ```bash
    python main.py
    ```
 
-#### Seçenek 2: Tıklanabilir Çalıştırılabilir Dosya Oluşturmak (Windows .exe veya Linux Executable)
-Hiç Python koduyla uğraşmadan, arkadaşlarınızla paylaşabileceğiniz tek tıklamayla açılan bir uygulama dosyası (`.exe` veya Linux executable) çıkartmak isterseniz:
-1. Terminal / CMD'yi açıp kütüphaneleri kurun:
+#### Seçenek 2: Tıklanabilir Kurulum Dosyası (.exe) Üretmek
+Python kullanmayan arkadaşlarınıza göndermek için tek tıklamayla çalışan bağımsız bir uygulama üretebilirsiniz:
    ```bash
    pip install -r requirements.txt
-   ```
-2. Otomatik derleme betiğini çalıştırın:
-   ```bash
    python build.py
    ```
-3. Tüm işlem bittiğinde projenin içinde oluşan `dist/AuraBeat` klasörünün içerisine girin.
-   - **Windows Kullanıyorsanız:** Oradaki `AuraBeat.exe` dosyasına çift tıklayarak uygulamayı açabilirsiniz.
-   - **Linux Kullanıyorsanız:** Oradaki `AuraBeat` isimli çalıştırılabilir dosyaya tıklayarak uygulamayı açabilirsiniz.
+   *İşlem bittiğinde `dist/AuraBeat` klasörü içerisindeki **AuraBeat.exe** (veya AuraBeat Linux executable) dosyanız hazır olacaktır!*
 
----
+<br><hr><br>
 
-## 🇬🇧 English (İngilizce)
-AuraBeat is a premium media downloader and player that allows you to download and enjoy high-quality media (MP3/MP4) from platforms like YouTube, Spotify, and SoundCloud. It is completely **Cross-Platform**, designed for both **Windows and Linux**.
+<h2 align="center">🇬🇧 English (English)</h2>
 
-### ✨ Features
-- **Fast Downloading:** Lossless download options.
-- **Smart Clipboard Monitor:** Automatically detects YouTube/Spotify links you copied and pastes them to the input field.
-- **Built-in Player & Visualizer:**
-  - **Glassmorphism UI:** Extremely premium frosted glass design.
-  - **Audio Reactive Particle Engine:** Stardust and particle animations that react to the music's tempo and bass drops.
-  - **3D Parallax Effect:** Creates a 3D depth illusion between the player interface and the background cover art as you move your mouse.
-- **Universal Compatibility:** Runs flawlessly on both Windows and Linux without modifying the code.
+AuraBeat is a premium media downloader and player that allows you to download and enjoy high-quality media from platforms like YouTube, Spotify, and SoundCloud. It is completely **Cross-Platform**, designed for both **Windows and Linux**.
+
+### ✨ Next-Gen Features
+| Category | Feature | Description |
+|----------|---------|-------------|
+| 🎧 **YouTube Music** | Native Streaming | Search and listen to YouTube Music directly inside the app without downloading! |
+| 🎨 **UI Design** | Glassmorphism | Extremely premium frosted glass design. |
+| 🎇 **Visualizer** | Particle Engine | Stardust and particle animations that react to the music's tempo and bass drops. |
+| 🌌 **Depth** | 3D Parallax | Creates a 3D depth illusion between the player interface and the background cover art as you move your mouse. |
+| 🌙 **Sleep & Tray** | System Tray | Minimize to system tray and keep listening in the background. Built-in sleep timer to automatically stop playback. |
+| 📋 **Smart Clipboard** | Auto-Paste | Automatically detects YouTube/Spotify links you copied and pastes them to the input field. |
 
 ### 🚀 How to Run and Build?
 
-AuraBeat fully supports **Windows 10 / Windows 11** and modern **Linux** distributions (Ubuntu, Arch, Fedora, etc.).
+AuraBeat fully supports **Windows 10 / 11** and modern **Linux** distributions.
 
-**Requirements:** 
-- Python 3.10+
-- [FFmpeg](https://ffmpeg.org/) installed and added to your system PATH.
+**Requirements:** Python 3.10+ and [FFmpeg](https://ffmpeg.org/) installed on your system.
 
 #### Option 1: Run Directly (Windows & Linux)
-1. Clone the repository or download it as a ZIP file.
-2. Open a Command Prompt (CMD) or Terminal inside the folder.
-3. Install dependencies:
+1. Clone or download the repository.
+2. Install dependencies and run:
    ```bash
    pip install -r requirements.txt
-   ```
-4. Start the application:
-   ```bash
    python main.py
    ```
 
-#### Option 2: Build a Standalone Executable (Windows .exe or Linux Executable)
-If you want a standalone application that you can share with others without requiring a Python installation:
-1. Open Terminal / CMD and install requirements:
+#### Option 2: Build a Standalone Executable
+To build a standalone `.exe` (or Linux executable) without requiring a Python installation:
    ```bash
    pip install -r requirements.txt
-   ```
-2. Run the automated build script:
-   ```bash
    python build.py
    ```
-3. After the build completes, go to the newly created `dist/AuraBeat/` directory.
-   - **On Windows:** Double-click the `AuraBeat.exe` to run your app.
-   - **On Linux:** Execute the standalone `AuraBeat` file to run your app.
+   *After completion, you will find your application inside the `dist/AuraBeat/` directory!*
 
 ---
 
-**Developed by:** mehmet
+<div align="center">
+  <b>Crafted with 🩵 by mehmet</b>
+</div>

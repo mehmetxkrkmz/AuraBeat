@@ -318,6 +318,17 @@ class CircularVisualizerWidget(QWidget):
                 elif self.theme == "Neon (Mavi/Mor)":
                     hue = 0.5 + (peak_val * 0.3) # Cyan to Purple
                     dyn_color = QColor.fromHsvF(hue, 1.0, 1.0)
+                elif self.theme == "Synthwave (80s)":
+                    # Synthwave: Pink to Cyan gradient based on position and peak
+                    base_hue = 0.83 if (i % 2 == 0) else 0.5 # Alternate Pink and Cyan
+                    hue = base_hue - (peak_val * 0.1)
+                    dyn_color = QColor.fromHsvF(abs(hue)%1.0, 0.9, 1.0)
+                elif self.theme == "Lo-Fi (Nostalji)":
+                    # Lo-Fi: Warm, desaturated oranges, peaches, and purples
+                    hue = 0.05 + (peak_val * 0.1) # Soft orange to pink
+                    sat = 0.5 + (peak_val * 0.2) # Lower saturation
+                    val = 0.8 + (peak_val * 0.2)
+                    dyn_color = QColor.fromHsvF(hue, sat, min(1.0, val))
                 elif self.theme == "Otomatik (Kapak)":
                     # Use parent's ambient color
                     if self.parent() and hasattr(self.parent(), 'current_ambient_color'):

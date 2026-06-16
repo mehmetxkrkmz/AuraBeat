@@ -633,7 +633,7 @@ class ExpandedPlayerWidget(QWidget):
         self.mini_player.seek_to(progress)
 
     def cycle_theme(self):
-        themes = ["Otomatik (Kapak)", "Rainbow", "Ateş (Kırmızı/Sarı)", "Neon (Mavi/Mor)", "Klasik (Mor)"]
+        themes = ["Otomatik (Kapak)", "Rainbow", "Ateş (Kırmızı/Sarı)", "Neon (Mavi/Mor)", "Synthwave (80s)", "Lo-Fi (Nostalji)", "Klasik (Mor)"]
         current = self.circular_visualizer.theme
         if current in themes:
             idx = themes.index(current)
