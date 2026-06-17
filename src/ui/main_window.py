@@ -723,6 +723,20 @@ class MainWindow(QMainWindow):
             if any(domain in text for domain in valid_domains):
                 self.url_input.setText(text)
                 self.status_bar.showMessage("Pano izleyici yeni bir medya linki yakaladı!", 3000)
+                
+                # Show IDM style popup
+                try:
+                    from src.ui.clipboard_popup import ClipboardPopupWidget
+                    # Keep a reference to prevent garbage collection
+                    self.clipboard_popup = ClipboardPopupWidget(text)
+                    self.clipboard_popup.download_requested.connect(self._popup_download_requested)
+                    self.clipboard_popup.show_animation()
+                except Exception as e:
+                    print(f"Error showing clipboard popup: {e}")
+
+    def _popup_download_requested(self, url):
+        self.url_input.setText(url)
+        self.start_download()
 
     def update_quality_options(self, text):
         self.quality_combo.clear()
