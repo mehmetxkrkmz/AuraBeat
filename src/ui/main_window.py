@@ -271,6 +271,7 @@ class MainWindow(QMainWindow):
                 self.show()
 
     def closeEvent(self, event):
+        from PyQt6.QtWidgets import QSystemTrayIcon
         # Minimize to tray instead of quitting
         event.ignore()
         self.hide()

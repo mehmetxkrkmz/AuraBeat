@@ -134,7 +134,6 @@ class ExpandedPlayerWidget(QWidget):
         self.target_parallax_x = offset_x * -30  # Max 30px shift
         self.target_parallax_y = offset_y * -30
         super().mouseMoveEvent(event)
-        super().resizeEvent(event)
 
     def setup_layout(self):
         outer_layout = QHBoxLayout(self)
