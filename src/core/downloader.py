@@ -89,33 +89,32 @@ class Downloader:
         if proxy:
             ydl_opts['proxy'] = proxy
             
-        if config.get("sponsorblock_enabled", False):
-            ydl_opts['postprocessors'] = ydl_opts.get('postprocessors', [])
-            ydl_opts['postprocessors'].append({
-                'key': 'SponsorBlock',
-                'categories': ['sponsor', 'intro', 'outro', 'selfpromo', 'interaction'],
-            })
-
-
+        ydl_opts['postprocessors'] = []
+        
         if fmt == "audio":
             ydl_opts.update({
                 'format': 'bestaudio/best',
-                'postprocessors': [
-                    {'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': quality},
-                    {'key': 'FFmpegMetadata'},
-                    {'key': 'EmbedThumbnail'}
-                ],
                 'writethumbnail': True,
             })
+            ydl_opts['postprocessors'].extend([
+                {'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': quality},
+                {'key': 'FFmpegMetadata'},
+                {'key': 'EmbedThumbnail'}
+            ])
         else:
-            # Parse quality like "1080p" -> "1080"
             height = ''.join(filter(str.isdigit, quality))
             if not height:
                 height = "1080"
                 
             ydl_opts.update({
                 'format': f'bestvideo[height<={height}][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-                'postprocessors': [{'key': 'FFmpegMetadata'}],
+            })
+            ydl_opts['postprocessors'].append({'key': 'FFmpegMetadata'})
+
+        if config.get("sponsorblock_enabled", False):
+            ydl_opts['postprocessors'].append({
+                'key': 'SponsorBlock',
+                'categories': ['sponsor', 'intro', 'outro', 'selfpromo', 'interaction'],
             })
 
         try:
@@ -125,6 +124,14 @@ class Downloader:
             if self.is_skipped:
                 return True, "Zaten indirildi (Arşivde mevcut).", "SKIPPED"
                 
+            # Fix final filename extension
+            if self.final_filename:
+                import os
+                base_name = os.path.splitext(self.final_filename)[0]
+                expected_ext = ".mp3" if fmt == "audio" else ".mp4"
+                if not self.final_filename.endswith(expected_ext):
+                    self.final_filename = base_name + expected_ext
+                    
             return True, "İndirme ve işleme tamamlandı.", self.final_filename
         except Exception as e:
             if "cancelled" in str(e).lower():
