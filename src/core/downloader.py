@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import yt_dlp
+from src.utils.config import config
 
 class MyLogger:
     def __init__(self, skip_callback):
@@ -78,6 +79,23 @@ class Downloader:
             'download_archive': str(self.output_path / '.aurabeat_sync.txt'),
             'logger': MyLogger(self.on_skip)
         }
+        
+        # Apply Advanced Settings
+        speed_limit = config.get("speed_limit_kb", 0)
+        if speed_limit > 0:
+            ydl_opts['ratelimit'] = speed_limit * 1024
+            
+        proxy = config.get("proxy_url", "")
+        if proxy:
+            ydl_opts['proxy'] = proxy
+            
+        if config.get("sponsorblock_enabled", False):
+            ydl_opts['postprocessors'] = ydl_opts.get('postprocessors', [])
+            ydl_opts['postprocessors'].append({
+                'key': 'SponsorBlock',
+                'categories': ['sponsor', 'intro', 'outro', 'selfpromo', 'interaction'],
+            })
+
 
         if fmt == "audio":
             ydl_opts.update({

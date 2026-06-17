@@ -13,7 +13,13 @@ class ConfigManager:
             "default_format": "audio",  # 'audio' or 'video'
             "audio_quality": "320",
             "video_quality": "1080p",
-            "theme": "dark"
+            "theme": "dark",
+            "max_concurrent_downloads": 3,
+            "speed_limit_kb": 0,  # 0 means unlimited
+            "clipboard_on_startup": False,
+            "sponsorblock_enabled": False,
+            "proxy_url": "",
+            "accent_color": "#58a6ff"
         }
         
         self.load_config()

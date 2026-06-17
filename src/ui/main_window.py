@@ -497,7 +497,7 @@ class MainWindow(QMainWindow):
         # Clipboard Monitor Toggle
         from PyQt6.QtWidgets import QCheckBox, QApplication
         self.clipboard_toggle = QCheckBox("Akıllı Pano İzleyici")
-        self.clipboard_toggle.setChecked(False)
+        self.clipboard_toggle.setChecked(config.get("clipboard_on_startup", False))
         self.clipboard_toggle.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.clipboard_toggle.setStyleSheet("color: #58a6ff; font-weight: bold; font-size: 13px;")
         self.clipboard_toggle.setToolTip("Kopyaladığınız YouTube/Spotify linklerini otomatik yapıştırır.")
@@ -815,24 +815,20 @@ class MainWindow(QMainWindow):
 
         from src.threads.worker import DownloadWorker
         for entry in entries:
-            # ytdlp extract_flat returns 'url' usually. Sometimes 'id' or 'webpage_url'
             entry_url = entry.get('url') or entry.get('webpage_url')
             if not entry_url:
                 continue
                 
-            # Fallback if URL is just an ID (common in flat playlist extraction)
             if not entry_url.startswith("http"):
                 entry_url = f"https://www.youtube.com/watch?v={entry.get('id')}"
 
-            # Create Worker
             worker = DownloadWorker(entry_url, fmt, quality, output_path)
+            worker.has_run = False
             
-            # Create Widget
             item_widget = DownloadItemWidget(entry.get('title') or entry_url, fmt, quality, worker)
             item_widget.play_requested.connect(self.mini_player.load_media)
             self.queue_layout.addWidget(item_widget)
 
-            # Track worker
             self.workers.append(worker)
             
             def cleanup_worker(success, msg, fname, w=worker):
@@ -841,19 +837,32 @@ class MainWindow(QMainWindow):
                 self.update_status_bar()
                 
                 if success and fname and hasattr(self, 'expanded_player_widget'):
-                    # Auto add to playlist if it's a media file
                     if fname.endswith(".mp3") or fname.endswith(".m4a") or fname.endswith(".wav"):
                         current_folder = self.expanded_player_widget.current_playlist_folder
                         if current_folder and current_folder == config.get("download_path"):
                             self.expanded_player_widget.load_playlist(current_folder)
                         elif not current_folder:
                             self.expanded_player_widget.load_playlist(config.get("download_path"))
+                self.check_queue()
 
             worker.finished.connect(cleanup_worker)
-            worker.start()
             
         self.url_input.clear()
+        self.check_queue()
         self.update_status_bar()
+
+    def check_queue(self):
+        max_concurrent = config.get("max_concurrent_downloads", 3)
+        active_count = sum(1 for w in self.workers if w.isRunning())
+        
+        for w in self.workers:
+            if not w.isRunning() and not w.has_run:
+                if active_count < max_concurrent:
+                    w.has_run = True
+                    w.start()
+                    active_count += 1
+                else:
+                    break
 
     def update_status_bar(self):
         active = sum(1 for w in self.workers if w.isRunning())
