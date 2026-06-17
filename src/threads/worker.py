@@ -35,9 +35,11 @@ class PlaylistResolverWorker(QThread):
         import yt_dlp
         
         ydl_opts = {
-            'extract_flat': True,
+            'extract_flat': 'in_playlist',
             'quiet': True,
             'no_warnings': True,
+            'color': 'no_color',
+            'ignoreerrors': True,
         }
         
         try:

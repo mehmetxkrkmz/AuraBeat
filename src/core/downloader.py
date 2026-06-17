@@ -77,7 +77,8 @@ class Downloader:
             'progress_hooks': [self.hook],
             'noplaylist': True,
             'download_archive': str(self.output_path / '.aurabeat_sync.txt'),
-            'logger': MyLogger(self.on_skip)
+            'logger': MyLogger(self.on_skip),
+            'color': 'no_color'
         }
         
         # Apply Advanced Settings
@@ -134,6 +135,13 @@ class Downloader:
                     
             return True, "İndirme ve işleme tamamlandı.", self.final_filename
         except Exception as e:
-            if "cancelled" in str(e).lower():
+            err_msg = str(e)
+            import re
+            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+            err_msg = ansi_escape.sub('', err_msg)
+            
+            if "cancelled" in err_msg.lower():
                 return False, "İndirme iptal edildi.", None
-            return False, f"Hata: {str(e)}", None
+            if "unavailable" in err_msg.lower():
+                return False, "Video kullanılamıyor (gizli, silinmiş veya ülke kısıtlaması).", None
+            return False, f"Hata: {err_msg}", None
