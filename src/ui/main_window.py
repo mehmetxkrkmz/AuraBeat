@@ -148,14 +148,19 @@ class DownloadItemWidget(QFrame):
         if success:
             self.progress_bar.setValue(100)
             self.percent_label.setText("100%")
-            self.status_label.setText("Tamamlandı")
-            self.status_label.setStyleSheet("color: #238636; font-size: 13px; font-weight: bold;")
             self.cancel_btn.setVisible(False)
-            self.open_btn.setVisible(True)
-            if filename and (filename.endswith(".mp3") or filename.endswith(".m4a") or filename.endswith(".mp4")):
-                self.edit_btn.setVisible(True)
-                self.listen_btn.setVisible(True)
-            self.final_path = filename
+            
+            if filename == "SKIPPED":
+                self.status_label.setText("Atlandı (Zaten Mevcut)")
+                self.status_label.setStyleSheet("color: #d29922; font-size: 13px; font-weight: bold;")
+            else:
+                self.status_label.setText("Tamamlandı")
+                self.status_label.setStyleSheet("color: #238636; font-size: 13px; font-weight: bold;")
+                self.open_btn.setVisible(True)
+                if filename and (filename.endswith(".mp3") or filename.endswith(".m4a") or filename.endswith(".mp4")):
+                    self.edit_btn.setVisible(True)
+                    self.listen_btn.setVisible(True)
+                self.final_path = filename
         else:
             self.status_label.setText(f"Hata: {message}")
             self.status_label.setStyleSheet("color: #f85149; font-size: 13px; font-weight: bold;")

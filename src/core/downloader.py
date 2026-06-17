@@ -2,6 +2,20 @@ import os
 from pathlib import Path
 import yt_dlp
 
+class MyLogger:
+    def __init__(self, skip_callback):
+        self.skip_callback = skip_callback
+        
+    def debug(self, msg):
+        if "has already been recorded in the archive" in msg:
+            self.skip_callback()
+            
+    def warning(self, msg):
+        pass
+        
+    def error(self, msg):
+        pass
+
 class Downloader:
     def __init__(self, output_path, progress_callback=None):
         self.output_path = Path(output_path)
@@ -9,6 +23,17 @@ class Downloader:
         self.progress_callback = progress_callback
         self.is_cancelled = False
         self.final_filename = None
+        self.is_skipped = False
+        
+    def on_skip(self):
+        self.is_skipped = True
+        if self.progress_callback:
+            self.progress_callback({
+                'status': 'skipped',
+                'percent': 100,
+                'speed': 'Atlandı',
+                'filename': 'Zaten USB/Klasörde Mevcut'
+            })
 
     def hook(self, d):
         if self.is_cancelled:
@@ -50,6 +75,8 @@ class Downloader:
             'outtmpl': str(self.output_path / '%(title)s.%(ext)s'),
             'progress_hooks': [self.hook],
             'noplaylist': True,
+            'download_archive': str(self.output_path / '.aurabeat_sync.txt'),
+            'logger': MyLogger(self.on_skip)
         }
 
         if fmt == "audio":
@@ -76,6 +103,10 @@ class Downloader:
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
+                
+            if self.is_skipped:
+                return True, "Zaten indirildi (Arşivde mevcut).", "SKIPPED"
+                
             return True, "İndirme ve işleme tamamlandı.", self.final_filename
         except Exception as e:
             if "cancelled" in str(e).lower():
