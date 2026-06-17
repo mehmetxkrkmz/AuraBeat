@@ -605,28 +605,6 @@ class MainWindow(QMainWindow):
         self.scroll_area.setWidget(self.queue_widget)
         dash_layout.addWidget(self.scroll_area, stretch=1)
         
-        # 3.5 Affiliate / Sponsor Banner
-        import os
-        from PyQt6.QtGui import QPixmap, QDesktopServices
-        from PyQt6.QtCore import QUrl
-        
-        self.ad_banner = QLabel()
-        self.ad_banner.setFixedHeight(120)
-        self.ad_banner.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.ad_banner.setStyleSheet("border: 1px solid #30363d; border-radius: 12px; background-color: #161b22;")
-        self.ad_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        banner_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "banner.png"))
-        if os.path.exists(banner_path):
-            pix = QPixmap(banner_path)
-            self.ad_banner.setPixmap(pix.scaledToHeight(118, Qt.TransformationMode.SmoothTransformation))
-        else:
-            self.ad_banner.setText("Reklam Alanı - Sponsor Olmak İçin Ulaşın")
-            
-        def open_sponsor(event):
-            QDesktopServices.openUrl(QUrl("https://www.amazon.com.tr/gaming-kulaklik/s?k=gaming+kulakl%C4%B1k"))
-        self.ad_banner.mousePressEvent = open_sponsor
-        dash_layout.addWidget(self.ad_banner)
 
         # Build Tabs
         self.dashboard_widget.addTab(self.downloads_tab, "İndirmeler")
