@@ -607,7 +607,7 @@ class MainWindow(QMainWindow):
         
         # 3.5 Affiliate / Sponsor Banner
         import os
-        from PyQt6.QtGui import QPixmap, QCursor, QDesktopServices
+        from PyQt6.QtGui import QPixmap, QDesktopServices
         from PyQt6.QtCore import QUrl
         
         self.ad_banner = QLabel()
